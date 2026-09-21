@@ -1,3 +1,4 @@
+
 import pandas as pd
 import plotly.express as px
 import streamlit as st
@@ -95,6 +96,7 @@ st.markdown("**이 그래프로 알 수 있는 것**")
 st.info("여기에 이 그래프를 통해 알 수 있는 내용을 한 문장으로 적어 주세요.")
 
 
+
 # ─────────────────────────────────────────────
 # 그래프 2. 일관객 합계 TOP 5 영화의 날짜별 변화
 # ─────────────────────────────────────────────
@@ -155,6 +157,57 @@ st.info("여기에 이 그래프를 통해 알 수 있는 내용을 한 문장�
 
 
 # ─────────────────────────────────────────────
-# 앞으로 그래프를 추가할 공간
+# 그래프 3. 날짜별 10위권 일관객 합계
 # ─────────────────────────────────────────────
 st.divider()
+st.header("그래프 3. 날짜별 10위권 일관객 합계")
+
+daily_total = (
+    df.groupby("날짜", as_index=False)["일관객"]
+    .sum()
+    .sort_values("날짜")
+)
+
+top3_days = (
+    daily_total.nlargest(3, "일관객")
+    .sort_values("일관객", ascending=False)
+    .copy()
+)
+
+fig3 = px.area(
+    daily_total,
+    x="날짜",
+    y="일관객",
+    title="날짜별 10위권 일관객 합계",
+    labels={
+        "날짜": "날짜",
+        "일관객": "10위권 일관객 합계",
+    },
+    hover_data={
+        "날짜": "|%Y-%m-%d",
+        "일관객": ":,",
+    },
+)
+
+# 합계가 가장 컸던 3일을 그래프 위에 표시
+fig3.add_scatter(
+    x=top3_days["날짜"],
+    y=top3_days["일관객"],
+    mode="markers+text",
+    text=top3_days["날짜"].dt.strftime("%Y-%m-%d"),
+    textposition="top center",
+    marker=dict(size=10),
+    name="합계 TOP 3",
+    hovertemplate="날짜: %{x|%Y-%m-%d}<br>10위권 일관객 합계: %{y:,}명<extra></extra>",
+)
+
+fig3.update_layout(
+    hovermode="x unified",
+    showlegend=True,
+    margin=dict(l=20, r=20, t=70, b=20),
+)
+
+st.plotly_chart(fig3, use_container_width=True)
+
+st.markdown("**이 그래프로 알 수 있는 것**")
+st.info("여기에 이 그래프를 통해 알 수 있는 내용을 한 문장으로 적어 주세요.")
