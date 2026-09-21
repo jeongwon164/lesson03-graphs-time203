@@ -96,13 +96,65 @@ st.info("여기에 이 그래프를 통해 알 수 있는 내용을 한 문장�
 
 
 # ─────────────────────────────────────────────
+# 그래프 2. 일관객 합계 TOP 5 영화의 날짜별 변화
+# ─────────────────────────────────────────────
+st.divider()
+st.header("그래프 2. 일관객 합계 TOP 5 영화의 날짜별 변화")
+
+top5_movies = (
+    df.groupby("영화명", as_index=False)["일관객"]
+    .sum()
+    .sort_values("일관객", ascending=False)
+    .head(5)["영화명"]
+    .tolist()
+)
+
+top5_df = (
+    df[df["영화명"].isin(top5_movies)]
+    .sort_values(["영화명", "날짜"])
+    .copy()
+)
+
+fig2 = px.line(
+    top5_df,
+    x="날짜",
+    y="일관객",
+    color="영화명",
+    markers=True,
+    title="이 기간 일관객 합계가 가장 큰 5편의 날짜별 일관객",
+    labels={
+        "날짜": "날짜",
+        "일관객": "일관객 수",
+        "영화명": "영화",
+    },
+    hover_data={
+        "날짜": "|%Y-%m-%d",
+        "일관객": ":,",
+        "영화명": True,
+    },
+)
+
+fig2.update_traces(
+    hovertemplate="영화: %{fullData.name}<br>날짜: %{x|%Y-%m-%d}<br>일관객: %{y:,}명<extra></extra>"
+)
+
+fig2.update_layout(
+    hovermode="x unified",
+    legend_title_text="영화",
+    margin=dict(l=20, r=20, t=60, b=20),
+)
+
+st.plotly_chart(
+    fig2,
+    use_container_width=True,
+    config={"displayModeBar": True},
+)
+
+st.markdown("**이 그래프로 알 수 있는 것**")
+st.info("여기에 이 그래프를 통해 알 수 있는 내용을 한 문장으로 적어 주세요.")
+
+
+# ─────────────────────────────────────────────
 # 앞으로 그래프를 추가할 공간
 # ─────────────────────────────────────────────
 st.divider()
-st.header("그래프 2")
-st.caption("앞으로 추가할 그래프를 이 구역에 넣어 주세요.")
-
-st.divider()
-st.header("그래프 3")
-st.caption("앞으로 추가할 그래프를 이 구역에 넣어 주세요.")
-
