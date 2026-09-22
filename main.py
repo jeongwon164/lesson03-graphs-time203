@@ -95,6 +95,37 @@ st.markdown("**이 그래프로 알 수 있는 것**")
 st.info("여기에 이 그래프를 통해 알 수 있는 내용을 한 문장으로 적어 주세요.")
 
 
+# ─────────────────────────────────────────────
+# 그래프 2. 일관객 합계 TOP 5 영화의 날짜별 변화
+# ─────────────────────────────────────────────
+st.divider()
+st.header("그래프 2. 일관객 합계 TOP 5 영화의 날짜별 변화")
+
+top5_movies = (
+    df.groupby("영화명", as_index=False)["일관객"]
+    .sum()
+    .sort_values("일관객", ascending=False)
+    .head(5)["영화명"]
+    .tolist()
+)
+
+top5_df = (
+    df[df["영화명"].isin(top5_movies)]
+    .sort_values(["영화명", "날짜"])
+    .copy()
+)
+
+fig2 = px.line(
+    top5_df,
+    x="날짜",
+    y="일관객",
+    color="영화명",
+    markers=True,
+    title="이 기간 일관객 합계가 가장 큰 5편의 날짜별 일관객",
+    labels={
+        "날짜": "날짜",
+        "일관객": "일관객 수",
+        "영화명": "영화",
     },
     hover_data={
         "날짜": "|%Y-%m-%d",
@@ -167,7 +198,6 @@ fig3.add_scatter(
     name="합계 TOP 3",
     hovertemplate="날짜: %{x|%Y-%m-%d}<br>10위권 일관객 합계: %{y:,}명<extra></extra>",
 )
-
 fig3.update_layout(
     hovermode="x unified",
     showlegend=True,
@@ -189,7 +219,7 @@ movie_summary = (
     df.groupby("영화명")
     .agg(
         기간_일관객=("일관객", "sum"),
-        10위권_일수=("날짜", "nunique"),
+        top10_days=("날짜", "nunique"),
     )
     .reset_index()
     .sort_values("기간_일관객", ascending=False)
@@ -205,13 +235,13 @@ fig4 = px.bar(
     text="기간_일관객",
     title="이 기간 일관객 합계 TOP 10",
     labels={"기간_일관객": "기간 일관객 합계", "영화명": "영화"},
-    hover_data={"기간_일관객": ":,", "10위권_일수": True},
+    hover_data={"기간_일관객": ":,", "top10_days": True},
 )
 
 fig4.update_traces(
     texttemplate="%{x:,}",
     textposition="outside",
-    customdata=movie_summary[["10위권_일수"]].to_numpy(),
+    customdata=movie_summary[["top10_days"]].to_numpy(),
     hovertemplate=(
         "영화: %{y}<br>"
         "기간 일관객 합계: %{x:,}명<br>"
