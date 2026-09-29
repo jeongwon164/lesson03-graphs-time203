@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide",
 )
 
-DATA_URL = "https://raw.githubusercontent.com/greatsong/modudata/main/data/kobis_daily.csv"
+DATA_URL = "https://raw.githubusercontent.com/happykth/data/main/kobis_movies.csv"
 
 st.title("영화 데이터 그래프 도감 1 - 시간")
 st.caption("KOBIS 일별 박스오피스 10위권 데이터를 이용해 영화의 시간에 따른 관객 변화를 살펴봅니다.")
